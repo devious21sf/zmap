@@ -21,7 +21,7 @@ ports = get_ports()
 ## Allow host to be unmodified URL 
 def strip_http(string):
     http = "://"
-    index = string.find(http)+3
+    index = string.find(http)+len(http)
     if index != -1:
         return string[index:]
     else: return string
@@ -31,15 +31,16 @@ def strip_domain(string):
     ".com",".org",".net",
     ".edu",".gov",".mil"
     ]
-    for item in domains:
-        if item in string:
-          index = string.find(item)+4
+    for domain in domains:
+        if domain in string:
+          index = string.find(domain)+len(domain)
           if index != -1:
             return string[:index]
     return string
 
 hosts = strip_http(hosts)
 hosts = strip_domain(hosts)
+print(hosts)
 
 ## Allow port to be app name as well as port numbner
 # item is port# or app name from 'ports'
