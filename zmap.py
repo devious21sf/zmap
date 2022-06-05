@@ -21,9 +21,9 @@ ports = get_ports()
 ## Allow host to be unmodified URL 
 def strip_http(string):
     http = "://"
-    index = string.find(http)+len(http)
+    index = string.find(http)
     if index != -1:
-        return string[index:]
+        return string[index+len(http):]
     else: return string
 
 def strip_domain(string):
@@ -33,9 +33,9 @@ def strip_domain(string):
     ]
     for domain in domains:
         if domain in string:
-          index = string.find(domain)+len(domain)
+          index = string.find(domain)
           if index != -1:
-            return string[:index]
+            return string[:index+len(domain)]
     return string
 
 hosts = strip_http(hosts)
