@@ -133,7 +133,7 @@ def nmap_inject_ips(list):
             source_ip = int_or_ext_IP(dest_ip) 
             index = line.index("for") # Nmap scan report for <dest>
             my_from = "from: "
-            if int_ip == "VPN is not connected":
+            if int_ip == "VPN is not connected" and private_ip_check(dest_ip):
                 my_from = "ERROR: "
             # Nmap scan report (from <source>) for <dest>
             ip_line = f"{line[:index]}({my_from}{source_ip}) {line[index:]}" 
