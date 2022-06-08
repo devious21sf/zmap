@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import subprocess as sp
 from sys import argv
+from requests import get
+import socket
 
 # Get hosts and ports via arguments or prompt
 def get_hosts():
@@ -69,8 +71,8 @@ def common_port_lookup(item):
 ports = ",".join(map(common_port_lookup,ports.split(",")))
 
 # Getting internal and external IPs
-public_ip = sp.run(['curl', 'ip.me'], capture_output=True, text=True)
-private_ip = sp.run(['hostname', '-I'], capture_output=True, text=True)
+public_ip = get('https://api.ipify.org').text 
+#private_ip = sp.run(['hostname', '-I'], capture_output=True, text=True)
 
 # Formatting IPs
 def get_internal_ip():
@@ -79,9 +81,17 @@ def get_internal_ip():
     if int_ip == '':
         int_ip = "VPN is not connected"
     return int_ip
-    
-ext_ip = public_ip.stdout.rstrip() # needed to remove trailing line break
-int_ip = get_internal_ip()
+
+def get_int_ip():    
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = (s.getsockname()[0])
+    s.close()
+    return ip
+
+ext_ip = public_ip #.stdout.rstrip() # needed to remove trailing line break
+int_ip = get_int_ip()
+#int_ip = get_internal_ip()
 
 # Sets port flags if ports exist
 def nmap_run(ports):
