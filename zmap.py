@@ -71,27 +71,17 @@ def common_port_lookup(item):
 ports = ",".join(map(common_port_lookup,ports.split(",")))
 
 # Getting internal and external IPs
-public_ip = get('https://api.ipify.org').text 
-#private_ip = sp.run(['hostname', '-I'], capture_output=True, text=True)
-
-# Formatting IPs
-def get_internal_ip():
-    query = sp.run(['hostname', '-I'], capture_output=True, text=True)
-    int_ip = query.stdout.split(' ')[1].rstrip()
-    if int_ip == '':
-        int_ip = "VPN is not connected"
-    return int_ip
-
-def get_int_ip():    
+def get_internal_ip(dest_ip):    
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
+    s.connect((dest_ip, 80))
     ip = (s.getsockname()[0])
     s.close()
     return ip
 
-ext_ip = public_ip #.stdout.rstrip() # needed to remove trailing line break
-int_ip = get_int_ip()
-#int_ip = get_internal_ip()
+def get_external_ip(dest_ip):
+    public_ip = get('https://api.ipify.org').text 
+    return public_ip
+
 
 # Sets port flags if ports exist
 def nmap_run(ports):
@@ -129,9 +119,9 @@ def private_ip_check(ip):
 # If private_ip_check True return int_ip. If False return ext_ip.
 def int_or_ext_IP(ip):
     if private_ip_check(ip) == True:
-        return int_ip
+        return get_internal_ip(ip)
     elif private_ip_check(ip) == False:
-        return ext_ip
+        return get_external_ip(ip)
     else: print("Error: IP was somehow not public or private")
 
 # Insert IP into Nmap output
@@ -144,8 +134,8 @@ def nmap_inject_ips(list):
             source_ip = int_or_ext_IP(dest_ip) 
             index = line.index("for") # Nmap scan report for <dest>
             my_from = "from: "
-            if int_ip == "VPN is not connected" and private_ip_check(dest_ip):
-                my_from = "ERROR: "
+            #if int_ip == "VPN is not connected" and private_ip_check(dest_ip):
+            #    my_from = "ERROR: "
             # Nmap scan report (from <source>) for <dest>
             ip_line = f"{line[:index]}({my_from}{source_ip}) {line[index:]}" 
             outlist.append(ip_line)
