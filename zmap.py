@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import subprocess as sp
 from sys import argv
 from requests import get
