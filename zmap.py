@@ -42,7 +42,6 @@ def strip_domain(string):
 
 hosts = strip_http(hosts)
 hosts = strip_domain(hosts)
-print(hosts)
 
 ## Allow port to be app name as well as port numbner
 # item is port# or app name from 'ports'
