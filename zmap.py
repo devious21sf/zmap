@@ -5,23 +5,38 @@ from requests import get
 import socket
 
 # Get hosts and ports via arguments or prompt
-def get_hosts():
+def get_hosts(): # Returns host dictionary
+    ## Variables ## 
+    hosts = {}
+    http = '://'
+    colon = ':'
+    slash = '/'
+    ## Get host argument ## 
     if len(argv) > 1:
-        hosts = argv[1].lower().replace(' ','') 
-    else: hosts = input("Enter IP address or ranges: ").lower().replace(' ','')
+        host_string = argv[1].lower().replace(' ','') 
+    else: host_string = input("Enter IP address or ranges: ").lower().replace(' ','')
+    ## Isolate scheme ## 
+    if http in host_string: 
+        http_index = host_string.find(http)
+        hosts['scheme'] = host_string[:http_index+len(http)]
+    else:
+        hosts['scheme'] = 'null'
+    
+    ## Return dictionary ## 
     return hosts
 
-def get_ports():
+def get_ports(): # Returns list of ports
     if len(argv) > 2:
         ports = argv[2].lower().replace(' ','')
     else: ports = input('Enter ports e.g. "80,443": ').lower().replace(' ', '')
+    ports = ports.split(",") 
     return ports
 
 hosts = get_hosts()
 ports = get_ports()
 
 ## Allow host to be unmodified URL 
-def strip_http(string):
+"""def strip_http(string):
     http = "://"
     index = string.find(http)
     if index != -1:
@@ -40,7 +55,7 @@ def strip_domain(string):
     return string
 
 hosts = strip_http(hosts)
-hosts = strip_domain(hosts)
+hosts = strip_domain(hosts)"""
 print(hosts)
 
 ## Allow port to be app name as well as port numbner
