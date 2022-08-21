@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 import subprocess as sp
 from sys import argv
 from requests import get
@@ -29,19 +29,19 @@ def strip_http(string):
     else: return string
 
 def strip_domain(string):
-    domains = [
-    ".com",".org",".net",
-    ".edu",".gov",".mil"
-    ]
-    for domain in domains:
-        if domain in string:
-          index = string.find(domain)
-          if index != -1:
-            return string[:index+len(domain)]
+    slash = '/'
+    colon = ':'
+    if colon in string:
+        index = string.find(colon)
+        return string[:index]
+    elif slash in string:
+        index = string.find(slash)
+        return string[:index]
     return string
 
 hosts = strip_http(hosts)
 hosts = strip_domain(hosts)
+print(hosts)
 
 ## Allow port to be app name as well as port numbner
 # item is port# or app name from 'ports'
