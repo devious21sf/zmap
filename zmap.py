@@ -19,8 +19,20 @@ def get_hosts(): # Returns host dictionary
     if http in host_string: 
         http_index = host_string.find(http)
         hosts['scheme'] = host_string[:http_index+len(http)]
+        host_string = host_string[http_index+len(http):]
     else:
         hosts['scheme'] = None
+    ## Isolate domain ##
+    if slash in host_string:
+        slash_index = host_string.find(slash)
+    else:
+        slash_index = len(host_string) 
+    if colon in host_string:
+        colon_index = host_string.find(colon)
+        hosts['domain'] = host_string[http_index+len(http):colon_index]
+        hosts['port'] = host_string[colon_index:slash_index]
+    else:
+        
     ## Isolate path ##
     if hosts['scheme'] == None:
         if slash in host_string:
@@ -34,13 +46,6 @@ def get_hosts(): # Returns host dictionary
             hosts['path'] = host_string[slash_index:]
         else:
             hosts['path'] = None            
-    
-    ## Isolate domain ##
-    if colon in host_string:
-        colon_index = host_string.find(colon)
-        hosts['domain'] = host_string[http_index+len(http):colon_index]
-        hosts['port'] = host_string[# Insert path index
-    else:
 
     ## Return dictionary ## 
     return hosts
