@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 import subprocess as sp
 from sys import argv
+from datetime import datetime
 from requests import get
 import socket
 
-# Get hosts and ports via arguments or prompt
+## Get hosts via arguments or prompt ##
 def get_hosts(): # Returns host dictionary
     ## Variables ## 
     hosts = {}
@@ -22,7 +23,7 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[http_index+len(http):]
     else:
         hosts['scheme'] = None
-    print(f"Isolate Scheme: Host_string = " + str(host_string) + ". Hosts['scheme'] = " + str(hosts['scheme']) + ".")
+    #print(f"Isolate Scheme: Host_string = " + str(host_string) + ". Hosts['scheme'] = " + str(hosts['scheme']) + ".")
     ## Isolate path ##
     if slash in host_string:
         slash_index = host_string.find(slash)
@@ -30,7 +31,7 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[:slash_index]
     else:
         hosts['path'] = None
-    print(f"Isolate Path: Host_string = " + str(host_string) + ". Hosts['path'] = " + str(hosts['path']) + ".")
+    #print(f"Isolate Path: Host_string = " + str(host_string) + ". Hosts['path'] = " + str(hosts['path']) + ".")
     ## Isolate Port ##
     if colon in host_string:
         colon_index = host_string.find(colon)
@@ -38,13 +39,14 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[:colon_index]
     else:
         hosts['port'] = None
-    print(f"Isolate Port: Host_string = " + str(host_string) + ". Hosts['port'] = " + str(hosts['port']) + ".")
+    #print(f"Isolate Port: Host_string = " + str(host_string) + ". Hosts['port'] = " + str(hosts['port']) + ".")
     ## Isolate domain ##
     hosts['domain'] = host_string
-    print(f"Isolate domain: Host_string = " + str(host_string) + ". Hosts['domain'] = " + str(hosts['domain']) + ".")
+    #print(f"Isolate domain: Host_string = " + str(host_string) + ". Hosts['domain'] = " + str(hosts['domain']) + ".")
     ## Return dictionary ## 
     return hosts
 
+## Get ports via arguments or prompt ##
 def get_ports(): # Returns list of ports
     if len(argv) > 2:
         ports = argv[2].lower().replace(' ','')
@@ -54,38 +56,8 @@ def get_ports(): # Returns list of ports
         ports.append(host_dict['port'])
     return ports
 
-host_dict = get_hosts()
-ports_list = get_ports()
-hosts = host_dict['domain']
-ports = ','.join(ports_list)
-
-print(f"hosts = " + str(hosts))
-print(f"ports = " + ports)
-## Allow host to be unmodified URL 
-"""def strip_http(string):
-    http = "://"
-    index = string.find(http)
-    if index != -1:
-        return string[index+len(http):]
-    else: return string
-
-def strip_domain(string):
-    slash = '/'
-    colon = ':'
-    if colon in string:
-        index = string.find(colon)
-        return string[:index]
-    elif slash in string:
-        index = string.find(slash)
-        return string[:index]
-    return string
-
-hosts = strip_http(hosts)
-hosts = strip_domain(hosts)"""
-print(hosts)
-
-## Allow port to be app name as well as port numbner
-# item is port# or app name from 'ports'
+## Allow port to be app name as well as port number ##
+# (item) is port or app name from user input. Will be vaiable 'ports'
 def common_port_lookup(item):
     apps = {
     "http":"80,443",
@@ -107,10 +79,20 @@ def common_port_lookup(item):
     else:
         return item # if port # was entered it keeps it
 
+## Run fuctions to define host and port variables ##
+host_dict = get_hosts()
+ports_list = get_ports()
+hosts = host_dict['domain']
+ports = ','.join(ports_list)
+
+#print(f"hosts = " + str(hosts))
+#print(f"ports = " + ports)
+
+## Common port lookup ##
 # Turns ports into an array and checks each. Then back to comma delimited string.
 ports = ",".join(map(common_port_lookup,ports.split(",")))
 
-# Getting internal and external IPs
+## Getting user's internal and external IPs ##
 def get_internal_ip(dest_ip):    
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect((dest_ip, 80))
@@ -122,22 +104,20 @@ def get_external_ip(dest_ip):
     public_ip = get('https://api.ipify.org').text 
     return public_ip
 
-
-# Sets port flags if ports exist
+## Running NMAP request ##
+# Sets NMAP port flags, if ports exist
 def nmap_run(ports):
     options = sp.run(['nmap', hosts, '-p', ports, '-Pn'], capture_output=True, text=True)
     if ports == '':
         options = sp.run(['nmap', hosts, '-Pn'], capture_output=True, text=True)
     return options
 
-# Runs nmap and stores result
-result = nmap_run(ports)
-
-# Make nmap output a list
-resultlist = result.stdout.split('\n')
-
-# Inject better starting text 
-resultlist[0] = f"\nStarting {resultlist[0][resultlist[0].find('at'):]}"
+# Running NMAP and defining variables
+print("Please wait while running scan ...")
+result = nmap_run(ports) # Runs nmap and stores result
+resultlist = result.stdout.split('\n') # Make nmap output a list
+###### Placeholder to replace the below with local time using datetime.now() and https://stackoverflow.com/questions/13855111/how-can-i-convert-24-hour-time-to-12-hour-time
+resultlist[0] = f"\nStarting {resultlist[0][resultlist[0].find('at'):]}" # Inject better starting text 
 
 # Find destination IP in nmap string
 def nmap_find_ip(string): # Gets the IP at the end of an nmap string
