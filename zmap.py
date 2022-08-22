@@ -22,31 +22,26 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[http_index+len(http):]
     else:
         hosts['scheme'] = None
-    ## Isolate domain ##
+    print(f"Isolate Scheme: Host_string = " + str(host_string) + ". Hosts['scheme'] = " + str(hosts['scheme']) + ".")
+    ## Isolate path ##
     if slash in host_string:
         slash_index = host_string.find(slash)
+        hosts['path'] = host_string[slash_index:]
+        host_string = host_string[:slash_index]
     else:
-        slash_index = len(host_string) 
+        hosts['path'] = None
+    print(f"Isolate Path: Host_string = " + str(host_string) + ". Hosts['path'] = " + str(hosts['path']) + ".")
+    ## Isolate Port ##
     if colon in host_string:
         colon_index = host_string.find(colon)
-        hosts['domain'] = host_string[http_index+len(http):colon_index]
-        hosts['port'] = host_string[colon_index:slash_index]
+        hosts['port'] = host_string[colon_index:]
+        host_string = host_string[:colon_index]
     else:
-        
-    ## Isolate path ##
-    if hosts['scheme'] == None:
-        if slash in host_string:
-            slash_index = host_string.find(slash)
-            hosts['path'] = host_string[slash_index:]
-        else:
-            hosts['path'] = None
-    else:
-        if slash in host_string[http_index:]:
-            slash_index = host_string.find(slash)
-            hosts['path'] = host_string[slash_index:]
-        else:
-            hosts['path'] = None            
-
+        hosts['port'] = None
+    print(f"Isolate Port: Host_string = " + str(host_string) + ". Hosts['port'] = " + str(hosts['port']) + ".")
+    ## Isolate domain ##
+    hosts['domain'] = host_string
+    print(f"Isolate domain: Host_string = " + str(host_string) + ". Hosts['domain'] = " + str(hosts['domain']) + ".")
     ## Return dictionary ## 
     return hosts
 
