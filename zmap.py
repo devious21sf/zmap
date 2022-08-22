@@ -34,7 +34,7 @@ def get_hosts(): # Returns host dictionary
     ## Isolate Port ##
     if colon in host_string:
         colon_index = host_string.find(colon)
-        hosts['port'] = host_string[colon_index:]
+        hosts['port'] = host_string[colon_index+1:]
         host_string = host_string[:colon_index]
     else:
         hosts['port'] = None
@@ -50,11 +50,17 @@ def get_ports(): # Returns list of ports
         ports = argv[2].lower().replace(' ','')
     else: ports = input('Enter ports e.g. "80,443": ').lower().replace(' ', '')
     ports = ports.split(",") 
+    if host_dict['port'] != None and host_dict['port'] not in ports:
+        ports.append(host_dict['port'])
     return ports
 
-hosts = get_hosts()
-ports = get_ports()
+host_dict = get_hosts()
+ports_list = get_ports()
+hosts = host_dict['domain']
+ports = ','.join(ports_list)
 
+print(f"hosts = " + str(hosts))
+print(f"ports = " + ports)
 ## Allow host to be unmodified URL 
 """def strip_http(string):
     http = "://"
