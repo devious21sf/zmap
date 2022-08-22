@@ -4,7 +4,7 @@ from sys import argv
 from datetime import datetime
 from requests import get
 import socket
-newline = '\n'
+
 ## Get hosts via arguments or prompt ##
 def get_hosts(): # Returns host dictionary
     ## Variables ## 
