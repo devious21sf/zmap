@@ -23,7 +23,7 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[http_index+len(http):]
     else:
         hosts['scheme'] = None
-    #print(f"Isolate Scheme: Host_string = " + str(host_string) + ". Hosts['scheme'] = " + str(hosts['scheme']) + ".")
+    #print(f"****Isolate Scheme: \nHosts['scheme'] = {str(hosts['scheme'])} \nHost_string = {str(host_string)}")
     ## Isolate path ##
     if slash in host_string:
         slash_index = host_string.find(slash)
@@ -31,7 +31,7 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[:slash_index]
     else:
         hosts['path'] = None
-    #print(f"Isolate Path: Host_string = " + str(host_string) + ". Hosts['path'] = " + str(hosts['path']) + ".")
+    #print(f"****Isolate Path: \nHosts['path'] = {str(hosts['path'])} \nHost_string = {str(host_string)}")
     ## Isolate Port ##
     if colon in host_string:
         colon_index = host_string.find(colon)
@@ -39,10 +39,10 @@ def get_hosts(): # Returns host dictionary
         host_string = host_string[:colon_index]
     else:
         hosts['port'] = None
-    #print(f"Isolate Port: Host_string = " + str(host_string) + ". Hosts['port'] = " + str(hosts['port']) + ".")
+    #print(f"****Isolate Port: \nHosts['port'] = {str(hosts['port'])} \nHost_string = {str(host_string)}")
     ## Isolate domain ##
     hosts['domain'] = host_string
-    #print(f"Isolate domain: Host_string = " + str(host_string) + ". Hosts['domain'] = " + str(hosts['domain']) + ".")
+    #print(f"****Isolate Domain: \nHosts['domain'] = {str(hosts['domain'])} \nHost_string = {str(host_string)}")
     ## Return dictionary ## 
     return hosts
 
@@ -85,8 +85,8 @@ ports_list = get_ports()
 hosts = host_dict['domain']
 ports = ','.join(ports_list)
 
-#print(f"hosts = " + str(hosts))
-#print(f"ports = " + ports)
+#print(f"hosts = {hosts}")
+#print(f"ports = {ports}")
 
 ## Common port lookup ##
 # Turns ports into an array and checks each. Then back to comma delimited string.
@@ -116,8 +116,9 @@ def nmap_run(ports):
 print("Please wait while running scan ...")
 result = nmap_run(ports) # Runs nmap and stores result
 resultlist = result.stdout.split('\n') # Make nmap output a list
-###### Placeholder to replace the below with local time using datetime.now() and https://stackoverflow.com/questions/13855111/how-can-i-convert-24-hour-time-to-12-hour-time
-resultlist[0] = f"\nStarting {resultlist[0][resultlist[0].find('at'):]}" # Inject better starting text 
+# Inject better "Starting" text
+dateandtime = datetime.now().astimezone().strftime("%m-%d-%Y %H:%M %p (%Z)")
+resultlist[0] = f"\nStarting at {dateandtime}" 
 
 # Find destination IP in nmap string
 def nmap_find_ip(string): # Gets the IP at the end of an nmap string
