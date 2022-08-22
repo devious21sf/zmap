@@ -116,8 +116,9 @@ def nmap_run(ports):
 print("Please wait while running scan ...")
 result = nmap_run(ports) # Runs nmap and stores result
 resultlist = result.stdout.split('\n') # Make nmap output a list
-###### Placeholder to replace the below with local time using datetime.now() and https://stackoverflow.com/questions/13855111/how-can-i-convert-24-hour-time-to-12-hour-time
-resultlist[0] = f"\nStarting {resultlist[0][resultlist[0].find('at'):]}" # Inject better starting text 
+# Inject better "Starting" text
+dateandtime = datetime.now().astimezone().strftime("%m-%d-%Y %H:%M %p (%Z)")
+resultlist[0] = f"\nStarting at {dateandtime}" 
 
 # Find destination IP in nmap string
 def nmap_find_ip(string): # Gets the IP at the end of an nmap string
